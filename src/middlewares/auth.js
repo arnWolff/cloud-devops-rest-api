@@ -12,9 +12,21 @@ const verifyCallback = (req, resolve, reject, requiredRights) => async (err, use
   if (requiredRights.length) {
     const userRights = roleRights.get(user.role);
     const hasRequiredRights = requiredRights.every((requiredRight) => userRights.includes(requiredRight));
-    if (!hasRequiredRights && req.params.userId !== user.id) {
-      return reject(new ApiError(httpStatus.FORBIDDEN, 'Forbidden'));
-    }
+	
+	// set user rights so we can use it later in project.service.js
+	// this would need security audit
+	req.user.hasRequiredRights = hasRequiredRights
+	
+	if (!hasRequiredRights) {
+		if(req.params.projectId) {
+			// const project = await projectService.getProjectById(req.params.projectId);
+		    // if (project.userId !== user.id) {
+				// return reject(new ApiError(httpStatus.FORBIDDEN, 'Forbidden'));
+			// }
+		}else if (req.params.userId !== user.id) {
+		  return reject(new ApiError(httpStatus.FORBIDDEN, 'Forbidden'));
+		}
+	}
   }
 
   resolve();

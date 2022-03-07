@@ -18,7 +18,23 @@ components:
         email: fake@example.com
         name: fake name
         role: user
-
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+        name: 
+          type: string
+        type: 
+          type: string
+          enum: [Private Cloud,IaaS, PaaS, SaaS]
+        userId: 
+          type: string
+      example:
+        id: 5ebac534954b54139806c112
+        name: fake name
+        type: IaaS
+        userId: 7ebac534954b54139806c113
     Token:
       type: object
       properties:
@@ -57,6 +73,15 @@ components:
           example:
             code: 400
             message: Email already taken
+    DuplicateName:
+      description: Name already taken
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 400
+            message: Name already taken
     Unauthorized:
       description: Unauthorized
       content:

@@ -13,9 +13,13 @@ router
 
 router
   .route('/:projectId')
-  .get(auth('getProjects'), validate(projectValidation.getProject), projectController.getProject)
-  .patch(auth('manageProjects'), validate(projectValidation.updateProject), projectController.updateProject)
-  .delete(auth('manageProjects'), validate(projectValidation.deleteProject), projectController.deleteProject);
+  .get(auth('getProject'), validate(projectValidation.getProject), projectController.getProject)
+  .patch(auth('manageProject'), validate(projectValidation.updateProject), projectController.updateProject)
+  .delete(auth('manageProject'), validate(projectValidation.deleteProject), projectController.deleteProject);
+  
+router
+  .route('/:projectId/:toolName')
+  .get(auth('getProject'), validate(projectValidation.getProject), projectController.getProject)
 
 module.exports = router;
 
@@ -31,7 +35,7 @@ module.exports = router;
  * /projects:
  *   post:
  *     summary: Create a project
- *     description: Only admins can create other projects.
+ *     description: Create new Project.
  *     tags: [Projects]
  *     security:
  *       - bearerAuth: []
@@ -43,29 +47,22 @@ module.exports = router;
  *             type: object
  *             required:
  *               - name
- *               - email
- *               - password
- *               - role
+ *               - type
+ *               - userId
  *             properties:
  *               name:
  *                 type: string
- *               email:
+ *               type:
  *                 type: string
  *                 format: email
- *                 description: must be unique
- *               password:
+ *                 enum: [Private Cloud,IaaS, PaaS, SaaS]
+ *               userId:
  *                 type: string
- *                 format: password
- *                 minLength: 8
- *                 description: At least one number and one letter
- *               role:
- *                  type: string
- *                  enum: [project, admin]
+ *                 description: must be unique
  *             example:
  *               name: fake name
- *               email: fake@example.com
- *               password: password1
- *               role: project
+ *               type: IaaS
+ *               userId: 12345678
  *     responses:
  *       "201":
  *         description: Created
@@ -74,7 +71,7 @@ module.exports = router;
  *             schema:
  *                $ref: '#/components/schemas/Project'
  *       "400":
- *         $ref: '#/components/responses/DuplicateEmail'
+ *         $ref: '#/components/responses/DuplicateName'
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
@@ -175,7 +172,7 @@ module.exports = router;
  *         $ref: '#/components/responses/Forbidden'
  *       "404":
  *         $ref: '#/components/responses/NotFound'
- *
+ * 
  *   patch:
  *     summary: Update a project
  *     description: Logged in projects can only update their own information. Only admins can update other projects.
@@ -219,7 +216,7 @@ module.exports = router;
  *             schema:
  *                $ref: '#/components/schemas/Project'
  *       "400":
- *         $ref: '#/components/responses/DuplicateEmail'
+ *         $ref: '#/components/responses/DuplicateName'
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
@@ -249,4 +246,79 @@ module.exports = router;
  *         $ref: '#/components/responses/Forbidden'
  *       "404":
  *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /projects/{id}/{toolName}:
+ *   get:
+ *     summary: Get a project tool
+ *     description: Logged user can fetch only their own project's tool information. Only admins can fetch other projects tool information.
+ *     tags: [Projects]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Project id
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/Project/:tool'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ * /projects/{id}/{toolName}/cli:
+ *   post:
+ *     summary: Create a project
+ *     description: Create new Project.
+ *     tags: [Projects]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - type
+ *               - userId
+ *             properties:
+ *               name:
+ *                 type: string
+ *               type:
+ *                 type: string
+ *                 format: email
+ *                 enum: [Private Cloud,IaaS, PaaS, SaaS]
+ *               userId:
+ *                 type: string
+ *                 description: must be unique
+ *             example:
+ *               name: fake name
+ *               type: IaaS
+ *               userId: 12345678
+ *     responses:
+ *       "201":
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/Project'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
  */
