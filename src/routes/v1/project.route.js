@@ -20,6 +20,10 @@ router
 router
   .route('/:projectId/:toolName')
   .get(auth('getProject'), validate(projectValidation.getProject), projectController.getProject)
+  
+router
+  .route('/:projectId/:toolName/cli')
+  .post(auth('toolCli'), validate(projectValidation.projectToolCli), projectController.projectToolCli)
 
 module.exports = router;
 
@@ -253,7 +257,7 @@ module.exports = router;
  * /projects/{id}/{toolName}:
  *   get:
  *     summary: Get a project tool
- *     description: Logged user can fetch only their own project's tool information. Only admins can fetch other projects tool information.
+ *     description: Logged user can fetch only their own project's tool information. Only admins can fetch other project tool information.
  *     tags: [Projects]
  *     security:
  *       - bearerAuth: []
@@ -277,10 +281,10 @@ module.exports = router;
  *         $ref: '#/components/responses/Forbidden'
  *       "404":
  *         $ref: '#/components/responses/NotFound'
- * /projects/{id}/{toolName}/cli:
+ * /projects/{id}/{toolName}/cli/{cmd}:
  *   post:
- *     summary: Create a project
- *     description: Create new Project.
+ *     summary: Call project tool CLI
+ *     description: Logged user interacts with CLI relative to installed tool for specified project. Only logged user can call specific command. Admin can call it for any project.
  *     tags: [Projects]
  *     security:
  *       - bearerAuth: []
@@ -291,23 +295,12 @@ module.exports = router;
  *           schema:
  *             type: object
  *             required:
- *               - name
- *               - type
- *               - userId
+ *               - cmd
  *             properties:
- *               name:
+ *               cmd:
  *                 type: string
- *               type:
- *                 type: string
- *                 format: email
- *                 enum: [Private Cloud,IaaS, PaaS, SaaS]
- *               userId:
- *                 type: string
- *                 description: must be unique
  *             example:
- *               name: fake name
- *               type: IaaS
- *               userId: 12345678
+ *               cmd: clone https://git-server.com/username/my-repo
  *     responses:
  *       "201":
  *         description: Created

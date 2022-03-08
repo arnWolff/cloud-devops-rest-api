@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { password, objectId } = require('./custom.validation');
+const { objectId } = require('./custom.validation');
 
 const createProject = {
   body: Joi.object().keys({    
@@ -23,6 +23,7 @@ const getProjects = {
 const getProject = {
   params: Joi.object().keys({
     projectId: Joi.string().required().custom(objectId),
+	toolName: Joi.string(),
   }),
 };
 
@@ -48,10 +49,23 @@ const deleteProject = {
   }),
 };
 
+const projectToolCli = {
+  params: Joi.object().keys({
+    projectId: Joi.string().required().custom(objectId),
+	toolName: Joi.string().required(),
+  }),
+  body: Joi.object().keys({
+	cmd: Joi.string(),
+	helper: Joi.string(),
+  })
+  .min(1),
+}
+
 module.exports = {
   createProject,
   getProjects,
   getProject,
   updateProject,
   deleteProject,
+  projectToolCli,
 };

@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { projectService } = require('../services');
+const { projectService, gitService } = require('../services');
 
 
 const createProject = catchAsync(async (req, res) => {
@@ -26,13 +26,17 @@ const getProjects = catchAsync(async (req, res) => {
 });
 
 const getProject = catchAsync(async (req, res) => {
-  let toReturn;	
   const project = await projectService.getProjectById(req.params.projectId);
  
   if (!project) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
   }
   
+  if(req.params.toolName) {
+	let toolName = req.params.toolName
+    res.send(project[toolName])
+	return;
+  }
   res.send(project);
 });
 
@@ -50,10 +54,24 @@ const deleteProject = catchAsync(async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send();
 });
 
+const projectToolCli = catchAsync(async (req, res) => {
+  console.log('TEST projectToolCli', req.params, req.body)
+  const toolName = req.params.toolName
+  let toReturn = {}
+  if(toolName === "git") {
+	  if(req.body.cmd) {
+		toReturn.cmd = await gitService.gitCommand(req)
+	  }
+  }
+  // await projectService.projectToolCli(req.params.projectId);
+  res.status(httpStatus.CREATED).send(toReturn);
+});
+
 module.exports = {
   createProject,
   getProjects,
   getProject,
   updateProject,
   deleteProject,
+  projectToolCli,
 };
