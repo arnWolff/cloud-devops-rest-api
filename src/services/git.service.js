@@ -1,11 +1,9 @@
 const httpStatus = require('http-status');
-const { Git } = require('../services');
 const ApiError = require('../utils/ApiError');
+const Directory = require('../utils/Directory');
 const process = require('process');
 const { spawn } = require("child_process");
 const DeferredPromise = require('deferredpromise');
-const fs   = require('fs');
-var slug = require('slug');
 
 /**
  * Create a git repository
@@ -14,10 +12,26 @@ var slug = require('slug');
  */
 const createGitRepository = async (projectBody) => {
 	/* TO IMPLEMENT */
-  // if (await Project.isNameTaken(projectBody.name)) {
-    // throw new ApiError(httpStatus.BAD_REQUEST, 'Project name already taken');
-  // }
-  // return Project.create(projectBody);
+};
+
+/**
+ * Clone a git repository 
+ * @param {object} http request
+ * @param {string} path to git repository to clone
+ * @param {object} [options] Optional parameters & custom options.
+ * @returns {Promise<Project>}
+ * @example <caption>options</caption>
+ * localCopy: store a copy of cloned repo on user host system:
+ *            values: true | false - {Default: false}
+ * keepOnServer: keep cloned repo on server once local copy done}
+ */
+const cloneGitRepository = async (req, options) => {
+	options = options || {}
+	req.body.localCopy = !!options.localCopy
+	req.body.keepOnServer = !!options.keepOnServer
+	const gitCmd = "clone"
+	req.body.cmd = gitCmd
+	await gitCommand(req)
 };
 
 /**
@@ -28,12 +42,14 @@ const createGitRepository = async (projectBody) => {
 const gitCommand = async (req) => {
 	const promise = new DeferredPromise();
     const user = req.user;
+	const keepOnServer = !!req.body.keepOnServer
 	
 	// get server API working directory
 	let cwd = process.cwd()
 	// get server API user's directory
-	const userDir = await fs.promises.mkdir(cwd + '/users/' + slug(user.name + '-' + user.email), { recursive: true })
-	console.log('userDir',userDir)
+	const userGitReposDir = Directory.setUserDirPath(user, "git")
+	// create users directory if doesn't exist
+	await Directory.create(userGitReposDir, {recursive: true})
 	// data to send back
 	let datas = []
 	// // set cwd of child process if needed
@@ -41,7 +57,8 @@ const gitCommand = async (req) => {
 	// start child process	
 	const child = spawn("git",req.body.cmd.split(' '), {
 	  stdio: 'pipe',
-	  cwd: userDir,
+	  cwd: userGitReposDir,
+	  detached: true,
 	});
 	
 	child.stdout.on('data', (data) => {
@@ -75,5 +92,6 @@ const gitCommand = async (req) => {
 
 module.exports = {
   createGitRepository,
+  cloneGitRepository,
   gitCommand,
 };
