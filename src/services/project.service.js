@@ -54,7 +54,6 @@ const getProjectByName = async (name) => {
  */
 const updateProjectById = async (user, projectId, updateBody) => {
   const project = await getProjectById(projectId);
-  console.log('PPPP::user.hasRequiredRights',user.hasRequiredRights)
   if (!project) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
   } else if(!user.hasRequiredRights && user._id.toString() !== project.userId) {

@@ -13,7 +13,7 @@ const verifyCallback = (req, resolve, reject, requiredRights) => async (err, use
     const userRights = roleRights.get(user.role);
     const hasRequiredRights = requiredRights.every((requiredRight) => userRights.includes(requiredRight));
 	
-	// set user rights so we can use it later in project.service.js
+	// set user current request rights so we can use it later in project.service.js to avoid extra database call
 	// this would need security audit
 	req.user.hasRequiredRights = hasRequiredRights
 	
