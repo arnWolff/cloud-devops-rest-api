@@ -61,4 +61,5 @@ module.exports = {
     },
     from: envVars.EMAIL_FROM,
   },
+  dockerVolumes_Users: envVars.DOCKER_VOLUMES_USERS,
 };
