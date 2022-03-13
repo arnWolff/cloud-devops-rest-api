@@ -1,15 +1,18 @@
 FROM node:alpine
 
-RUN mkdir -p /usr/src/node-app && chown -R node:node /usr/src/node-app
+RUN mkdir -p /usr/src/cloud-devops-rest-api && chown -R node:node /usr/src/cloud-devops-rest-api
 
-WORKDIR /usr/src/node-app
+WORKDIR /usr/src/cloud-devops-rest-api
 
-COPY package.json yarn.lock ./
+COPY package.json ./
 
-USER node
+USER root
 
 RUN yarn install --pure-lockfile
+#RUN apk update
+#RUN apk add git
+#RUN npm install
 
-COPY --chown=node:node . .
+COPY . .
 
-EXPOSE 3000
+EXPOSE 443

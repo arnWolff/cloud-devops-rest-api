@@ -56,8 +56,8 @@ const updateProjectById = async (user, projectId, updateBody) => {
   const project = await getProjectById(projectId);
   if (!project) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
-  } else if(!user.hasRequiredRights && user._id.toString() !== project.userId) {
-	  throw new ApiError(httpStatus.FORBIDDEN, 'Forbidden')
+  } else if (!user.hasRequiredRights && user._id.toString() !== project.userId) {
+    throw new ApiError(httpStatus.FORBIDDEN, 'Forbidden');
   }
   if (updateBody.name && (await Project.isNameTaken(updateBody.name, projectId))) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Project name already taken');

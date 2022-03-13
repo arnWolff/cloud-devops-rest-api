@@ -21,8 +21,17 @@ if (config.env !== 'test') {
   app.use(morgan.errorHandler);
 }
 
-// set security HTTP headers
-app.use(helmet());
+// // set security HTTP headers
+app.use(helmet()); // on Cloud, enable it to use https
+
+// patch to let http support in Google Compute Engine for Swagger
+// on Cloud, disable it to use https
+/* const cspDefaults = helmet.contentSecurityPolicy.getDefaultDirectives();
+delete cspDefaults['upgrade-insecure-requests'];
+
+app.use(helmet({
+    contentSecurityPolicy: { directives: cspDefaults }
+})); */
 
 // parse json request body
 app.use(express.json());

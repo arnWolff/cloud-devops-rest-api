@@ -12,32 +12,34 @@ const verifyCallback = (req, resolve, reject, requiredRights) => async (err, use
   if (requiredRights.length) {
     const userRights = roleRights.get(user.role);
     const hasRequiredRights = requiredRights.every((requiredRight) => userRights.includes(requiredRight));
-	
-	// set user current request rights so we can use it later in project.service.js to avoid extra database call
-	// this would need security audit
-	req.user.hasRequiredRights = hasRequiredRights
-	
-	if (!hasRequiredRights) {
-		if(req.params.projectId) {
-			// const project = await projectService.getProjectById(req.params.projectId);
-		    // if (project.userId !== user.id) {
-				// return reject(new ApiError(httpStatus.FORBIDDEN, 'Forbidden'));
-			// }
-		}else if (req.params.userId !== user.id) {
-		  return reject(new ApiError(httpStatus.FORBIDDEN, 'Forbidden'));
-		}
-	}
+
+    // set user current request rights so we can use it later in project.service.js to avoid extra database call
+    // this would need security audit
+    req.user.hasRequiredRights = hasRequiredRights;
+
+    if (!hasRequiredRights) {
+      if (req.params.projectId) {
+        // const project = await projectService.getProjectById(req.params.projectId);
+        // if (project.userId !== user.id) {
+        // return reject(new ApiError(httpStatus.FORBIDDEN, 'Forbidden'));
+        // }
+      } else if (req.params.userId !== user.id) {
+        return reject(new ApiError(httpStatus.FORBIDDEN, 'Forbidden'));
+      }
+    }
   }
 
   resolve();
 };
 
-const auth = (...requiredRights) => async (req, res, next) => {
-  return new Promise((resolve, reject) => {
-    passport.authenticate('jwt', { session: false }, verifyCallback(req, resolve, reject, requiredRights))(req, res, next);
-  })
-    .then(() => next())
-    .catch((err) => next(err));
-};
+const auth =
+  (...requiredRights) =>
+  async (req, res, next) => {
+    return new Promise((resolve, reject) => {
+      passport.authenticate('jwt', { session: false }, verifyCallback(req, resolve, reject, requiredRights))(req, res, next);
+    })
+      .then(() => next())
+      .catch((err) => next(err));
+  };
 
 module.exports = auth;

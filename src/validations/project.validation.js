@@ -2,10 +2,10 @@ const Joi = require('joi');
 const { objectId } = require('./custom.validation');
 
 const createProject = {
-  body: Joi.object().keys({    
+  body: Joi.object().keys({
     name: Joi.string().required(),
-    type: Joi.string().required().valid('Private Cloud','IaaS', 'PaaS', 'SaaS'),
-	userId: Joi.string().required() //.custom(objectId),
+    type: Joi.string().required().valid('Private Cloud', 'IaaS', 'PaaS', 'SaaS'),
+    userId: Joi.string().required(), // .custom(objectId),
   }),
 };
 
@@ -23,7 +23,7 @@ const getProjects = {
 const getProject = {
   params: Joi.object().keys({
     projectId: Joi.string().required().custom(objectId),
-	toolName: Joi.string(),
+    toolName: Joi.string(),
   }),
 };
 
@@ -34,10 +34,10 @@ const updateProject = {
   body: Joi.object()
     .keys({
       name: Joi.string().required(),
-      type: Joi.string().required().valid('Private Cloud','IaaS', 'PaaS', 'SaaS'),
-	  userId: Joi.string().custom(objectId),
-	  git: Joi.object().keys({
-		repo: Joi.string().required(),
+      type: Joi.string().required().valid('Private Cloud', 'IaaS', 'PaaS', 'SaaS'),
+      userId: Joi.string().custom(objectId),
+      git: Joi.object().keys({
+        repo: Joi.string().required(),
       }),
     })
     .min(1),
@@ -52,14 +52,15 @@ const deleteProject = {
 const projectToolCli = {
   params: Joi.object().keys({
     projectId: Joi.string().required().custom(objectId),
-	toolName: Joi.string().required(),
+    toolName: Joi.string().required(),
   }),
-  body: Joi.object().keys({
-	cmd: Joi.string(),
-	helper: Joi.string(),
-  })
-  .min(1),
-}
+  body: Joi.object()
+    .keys({
+      cmd: Joi.string(),
+      helper: Joi.string(),
+    })
+    .min(1),
+};
 
 module.exports = {
   createProject,
