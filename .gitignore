@@ -13,3 +13,8 @@ coverage
 
 # users folder
 users
+certbot/ca_bundle.crt
+certbot/ca_bundle.crt
+certbot/private/private.key
+certbot/ca_bundle.crt
+certbot/certificate.crt

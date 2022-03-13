@@ -16,14 +16,14 @@ router
   .get(auth('getProject'), validate(projectValidation.getProject), projectController.getProject)
   .patch(auth('manageProject'), validate(projectValidation.updateProject), projectController.updateProject)
   .delete(auth('manageProject'), validate(projectValidation.deleteProject), projectController.deleteProject);
-  
+
 router
   .route('/:projectId/:toolName')
-  .get(auth('getProject'), validate(projectValidation.getProject), projectController.getProject)
-  
+  .get(auth('getProject'), validate(projectValidation.getProject), projectController.getProject);
+
 router
   .route('/:projectId/:toolName/cli')
-  .post(auth('toolCli'), validate(projectValidation.projectToolCli), projectController.projectToolCli)
+  .post(auth('toolCli'), validate(projectValidation.projectToolCli), projectController.projectToolCli);
 
 module.exports = router;
 
@@ -176,7 +176,7 @@ module.exports = router;
  *         $ref: '#/components/responses/Forbidden'
  *       "404":
  *         $ref: '#/components/responses/NotFound'
- * 
+ *
  *   patch:
  *     summary: Update a project
  *     description: Logged in projects can only update their own information. Only admins can update other projects.

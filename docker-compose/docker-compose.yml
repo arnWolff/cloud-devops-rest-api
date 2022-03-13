@@ -1,0 +1,51 @@
+version: "3.8"
+services:
+  mongodb:
+    image : mongo:latest
+    container_name: cloud-devops-mongodb
+    hostname: cloud-devops-mongodb
+    volumes:
+    - /home/arnwolff/mongodb/database:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: pass
+      MONGO_INITDB_DATABASE: cloud-devops-restful-api
+      MONGO_INITDB_USERNAME: user1
+      MONGO_INITDB_PASSWORD: passpass666
+    ports:
+      - "27017:27017"
+    restart: unless-stopped
+    networks:
+      - network-ext
+  cloud-devops-rest-api:
+    image: arnw/cloud-devops-rest-api:latest
+    container_name: cloud-devops-rest-api
+    hostname: cloud-devops-rest-api
+    command: npm run dev
+    ports:
+      - "443:443"
+    restart: unless-stopped
+    networks:
+      - network-ext
+      - network-int
+  gitea:
+    image: gitea/gitea:latest
+    container_name: cloud-devops-gitea
+    hostname: cloud-devops-gitea
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+    networks:
+      - network-ext
+    volumes:
+      - /var/lib/gitea:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "3000:3000"
+      - "222:22"
+    restart: unless-stopped
+networks:
+  network-ext:
+  network-int:
+    internal: true

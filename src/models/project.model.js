@@ -1,6 +1,4 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
-const bcrypt = require('bcryptjs');
 const { toJSON, paginate } = require('./plugins');
 
 const gitSchema = new mongoose.Schema({
@@ -9,7 +7,6 @@ const gitSchema = new mongoose.Schema({
     trim: true,
   },
 });
-
 
 const projectSchema = mongoose.Schema(
   {
@@ -27,12 +24,12 @@ const projectSchema = mongoose.Schema(
     userId: {
       type: String,
       required: true,
-	  trim: true,
-      //private: true, // used by the toJSON plugin
+      trim: true,
+      // private: true, // used by the toJSON plugin
     },
-	git: {
+    git: {
       type: gitSchema,
-	  default: {},
+      default: {},
     },
   },
   {

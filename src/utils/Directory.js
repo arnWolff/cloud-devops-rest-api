@@ -1,7 +1,6 @@
+const fs = require('fs');
+const slug = require('slug');
 const config = require('../config/config');
-const fs   = require('fs');
-const DeferredPromise = require('deferredpromise');
-var slug = require('slug');
 
 /**
  * Get user directory
@@ -10,7 +9,7 @@ var slug = require('slug');
  */
 const setUserDirPath = (user, toolName) => {
   // get server API user's directory
-  const userGitReposDir = config.dockerVolumes_Users + slug(user.email) + '/' + toolName
+  const userGitReposDir = `${config.dockerVolumes_Users + slug(user.email)}/${toolName}`;
   return userGitReposDir;
 };
 
@@ -21,11 +20,9 @@ const setUserDirPath = (user, toolName) => {
  * @returns {Object}
  */
 const create = async (path, options) => {
-  options = options || {}
-  if(!fs.existsSync(path)){
-    return promise = await fs.promises.mkdir(path, options).catch(err => {
-	  console.error(err);
-    });
+  // options = options || {};
+  if (!fs.existsSync(path)) {
+    return fs.promises.mkdir(path, options);
   }
   return true;
 };

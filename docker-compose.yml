@@ -3,26 +3,27 @@ version: '3'
 services:
   node-app:
     build: .
-    image: node-app
+    image: arnw/cloud-devops-rest-api
     environment:
-      - MONGODB_URL=mongodb://mongodb:27017/node-boilerplate
+      - DOCKER_VOLUMES_USERS=/usr/src/cloud-devops-rest-api
+      - MONGODB_URL=mongodb://admin:passpass666@34.122.246.86:27017/cloud-devops-restful-api
     ports:
       - '3000:3000'
     depends_on:
-      - mongodb
+      - arnw/git-server
     volumes:
-      - .:/usr/src/node-app
+      - .:/usr/src/cloud-devops-rest-api
     networks:
-      - node-network
+      - node-api-network
 
-  mongodb:
-    image: mongo:4.2.1-bionic
+  git:
+    image: arnw/git-server
     ports:
-      - '27017:27017'
+      - '7005:7005'
     volumes:
       - dbdata:/data/db
     networks:
-      - node-network
+      - node-api-network
 
 volumes:
   dbdata:

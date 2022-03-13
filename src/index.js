@@ -1,23 +1,30 @@
 const mongoose = require('mongoose');
+const fs = require('fs');
+const https = require('https');
 const app = require('./app');
 const config = require('./config/config');
 const logger = require('./config/logger');
-const dotenv = require('dotenv');
-const path = require('path');
 const Directory = require('./utils/Directory');
-const fs = require('fs');
 
 // create users directory if doesn't exist
-;(async () => {
-	await Directory.create(config.dockerVolumes_Users)
+(async () => {
+  await Directory.create(config.dockerVolumes_Users);
 })();
+
+// start https server
+const sslOptions = {
+  key: fs.readFileSync('./certbot/private/private.key'),
+  cert: fs.readFileSync('./certbot/certificate.crt'),
+};
 
 let server;
 mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
   logger.info('Connected to MongoDB');
-  server = app.listen(config.port, () => {
-    logger.info(`Listening to port ${config.port}`);
-  });
+  // server = app.listen(config.port, () => {
+  // logger.info(`Listening to port ${config.port}`);
+  // });
+
+  server = https.createServer(sslOptions, app).listen(443);
 });
 
 const exitHandler = () => {
