@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+// const fs = require('fs');
+// const https = require('https');
 const fs = require('fs');
 const https = require('https');
 const app = require('./app');
@@ -12,19 +14,34 @@ const Directory = require('./utils/Directory');
 })();
 
 // start https server
+
+/* const sslOptions = {
+  key: fs.readFileSync('./certbot/private/private.key'),
+  cert: fs.readFileSync('./certbot/certificate.crt'),
+}; */
+=======
 const sslOptions = {
   key: fs.readFileSync('./certbot/private/private.key'),
   cert: fs.readFileSync('./certbot/certificate.crt'),
 };
 
+
 let server;
 mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
   logger.info('Connected to MongoDB');
+
+  server = app.listen(config.port, () => {
+    logger.info(`Listening to port ${config.port}`);
+  });
+
+  // server = https.createServer(sslOptions, app).listen(443);
+
   // server = app.listen(config.port, () => {
   // logger.info(`Listening to port ${config.port}`);
   // });
 
   server = https.createServer(sslOptions, app).listen(443);
+
 });
 
 const exitHandler = () => {
