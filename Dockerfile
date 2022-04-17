@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM arm64v8/node:17-bullseye
 
 RUN mkdir -p /usr/src/cloud-devops-rest-api && chown -R node:node /usr/src/cloud-devops-rest-api
 
